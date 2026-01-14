@@ -1,0 +1,22 @@
+__pycache__/
+*.py[cod]
+*.egg-info/
+.Python
+.DS_Store
+
+# Environments
+.env
+env/
+venv/
+.venv/
+
+# Test & tooling caches
+.pytest_cache/
+.mypy_cache/
+
+# Build artifacts
+artifacts/
+
+# Models: keep best model, ignore others
+models/*.joblib
+!models/best_model.joblib
