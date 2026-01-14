@@ -1,23 +1,10 @@
 import os
-import re
 import joblib
-from fastapi import FastAPI, Request, Form, File, UploadFile
-from fastapi.responses import HTMLResponse, FileResponse
+from fastapi import FastAPI, File, UploadFile
+from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 from typing import Optional
-from train import train_and_save_best
-from nltk.stem import PorterStemmer
-
-ps = PorterStemmer()
-
-def clean_text(s: str) -> str:
-    s = s.lower()
-    s = re.sub(r"<[^>]+>", " ", s)
-    s = re.sub(r"[^a-z\s]", " ", s)
-    tokens = s.split()
-    tokens = [ps.stem(t) for t in tokens]
-    return " ".join(tokens)
 
 app = FastAPI()
 
