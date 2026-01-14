@@ -1,5 +1,7 @@
 # Email Spam Detection Classifier
 
+##Live Demo:https://spamdetector-k40j.onrender.com
+
 A machine learning-powered web application for classifying emails as spam or ham (non-spam) using natural language processing techniques. The system achieves high accuracy through multiple ML models and provides an intuitive web interface for real-time predictions.
 
 ## Production Summary (JSON)
