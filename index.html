@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Email Spam Detection</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Email Spam Detection Classifier</h1>
+        <p>Enter email text or upload a file to check if it's spam or ham.</p>
+
+        <div class="tabs">
+            <button class="tab-button active" onclick="showTab('text')">Text Input</button>
+            <button class="tab-button" onclick="showTab('file')">File Upload</button>
+        </div>
+
+        <div id="text-tab" class="tab-content active">
+            <form id="text-form">
+                <textarea id="email-text" placeholder="Paste your email text here..." required></textarea>
+                <button type="submit" class="btn">Check Spam</button>
+            </form>
+        </div>
+
+        <div id="file-tab" class="tab-content">
+            <form id="file-form" enctype="multipart/form-data">
+                <input type="file" id="email-file" accept=".txt,.eml" required>
+                <button type="submit" class="btn">Upload & Check</button>
+            </form>
+        </div>
+
+        <div id="result" class="result hidden">
+            <h3>Result:</h3>
+            <p id="result-text"></p>
+            <div id="probability-bar" class="probability-bar">
+                <div id="probability-fill" class="probability-fill"></div>
+                <span id="probability-text"></span>
+            </div>
+        </div>
+
+        <div class="examples">
+            <h3>Example Emails:</h3>
+            <div class="example-cards">
+                <div class="card" onclick="useExample('Congratulations! You have won a free iPhone. Click here to claim your prize!')">
+                    <h4>Spam Example</h4>
+                    <p>Congratulations! You have won a free iPhone. Click here to claim your prize!</p>
+                </div>
+                <div class="card" onclick="useExample('Hi, can we meet tomorrow at 10 AM for the project discussion?')">
+                    <h4>Ham Example</h4>
+                    <p>Hi, can we meet tomorrow at 10 AM for the project discussion?</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/script.js"></script>
+</body>
+</html>
