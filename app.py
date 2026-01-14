@@ -21,17 +21,15 @@ class PredictResponse(BaseModel):
 MODEL_PATH = os.path.join("models", "best_model.joblib")
 model = None
 
-def load_or_train():
+def load_model():
     global model
-    if os.path.exists(MODEL_PATH):
-        model = joblib.load(MODEL_PATH)
-    else:
-        path, _, _ = train_and_save_best()
-        model = joblib.load(path)
+    if not os.path.exists(MODEL_PATH):
+        raise RuntimeError("models/best_model.joblib not found. Train offline and include the artifact.")
+    model = joblib.load(MODEL_PATH)
 
 @app.on_event("startup")
 def startup_event():
-    load_or_train()
+    load_model()
 
 @app.get("/health")
 def health():
