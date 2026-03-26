@@ -4,3 +4,4 @@ scikit-learn
 joblib
 python-multipart
 nltk
+jinja2

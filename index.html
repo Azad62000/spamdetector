@@ -12,24 +12,65 @@
         <p>Enter email text or upload a file to check if it's spam or ham.</p>
 
         <div class="tabs">
-            <button class="tab-button active" onclick="showTab('text')">Text Input</button>
-            <button class="tab-button" onclick="showTab('file')">File Upload</button>
+            <button class="tab-button {% if not tab or tab == 'text' %}active{% endif %}" onclick="showTab('text')">Text Input</button>
+            <button class="tab-button {% if tab == 'file' %}active{% endif %}" onclick="showTab('file')">File Upload</button>
         </div>
 
-        <div id="text-tab" class="tab-content active">
-            <form id="text-form">
-                <textarea id="email-text" placeholder="Paste your email text here..." required></textarea>
+        <div id="text-tab" class="tab-content {% if not tab or tab == 'text' %}active{% endif %}">
+            <form id="text-form" action="/predict_form" method="POST">
+                <textarea name="text" id="email-text" placeholder="Paste your email text here..." required>{{ result.text if result and result.text else '' }}</textarea>
+                <div class="form-group">
+                    <label for="threshold-text">Spam Threshold (0.0 - 1.0):</label>
+                    <input type="number" id="threshold-text" name="threshold" step="0.01" min="0" max="1" value="0.5">
+                </div>
                 <button type="submit" class="btn">Check Spam</button>
             </form>
         </div>
 
-        <div id="file-tab" class="tab-content">
-            <form id="file-form" enctype="multipart/form-data">
-                <input type="file" id="email-file" accept=".txt,.eml" required>
+        <div id="file-tab" class="tab-content {% if tab == 'file' %}active{% endif %}">
+            <form id="file-form" action="/predict_file_form" method="POST" enctype="multipart/form-data">
+                <input type="file" name="file" id="email-file" accept=".txt,.eml" required>
+                <div class="form-group">
+                    <label for="threshold-file">Spam Threshold (0.0 - 1.0):</label>
+                    <input type="number" id="threshold-file" name="threshold" step="0.01" min="0" max="1" value="0.5">
+                </div>
                 <button type="submit" class="btn">Upload & Check</button>
             </form>
         </div>
 
+        {% if result %}
+        <div id="result" class="result">
+            <h3>Result:</h3>
+            {% if result.error %}
+                <p style="color: red;">Error: {{ result.error }}</p>
+            {% else %}
+                <p id="result-text">
+                    {% if result.label == 'spam' %}
+                        <span style="color: #ef4444; font-weight: bold;">This email is classified as SPAM</span>
+                    {% else %}
+                        <span style="color: #10b981; font-weight: bold;">This email is classified as HAM (Not Spam)</span>
+                    {% endif %}
+                </p>
+                {% if result.spam_probability is not none %}
+                    <div id="probability-bar" class="probability-bar" style="display: block;">
+                        {% set percentage = (result.spam_probability * 100) | round | int %}
+                        <div id="probability-fill" class="probability-fill" style="width: {{ percentage }}%;"></div>
+                        <span id="probability-text">{{ percentage }}% Spam Probability</span>
+                    </div>
+                {% endif %}
+                {% if result.explanation and result.explanation.top_keywords %}
+                    <div class="explanation">
+                        <h4>Top Keywords contributing to prediction:</h4>
+                        <ul>
+                            {% for keyword in result.explanation.top_keywords %}
+                                <li>{{ keyword }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                {% endif %}
+            {% endif %}
+        </div>
+        {% else %}
         <div id="result" class="result hidden">
             <h3>Result:</h3>
             <p id="result-text"></p>
@@ -38,6 +79,7 @@
                 <span id="probability-text"></span>
             </div>
         </div>
+        {% endif %}
 
         <div class="examples">
             <h3>Example Emails:</h3>
