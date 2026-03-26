@@ -110,12 +110,14 @@ A machine learning-powered web application for classifying emails as spam or ham
 
 ## 🚀 Features
 
-- **Multi-Model Evaluation**: Trains and compares 5 different ML algorithms
-- **High Accuracy**: SVM model achieves 98.6% test accuracy
-- **Web Interface**: Clean, responsive UI with text input and file upload
-- **Real-time Predictions**: Instant classification with probability visualization
-- **Docker Ready**: Containerized for easy deployment
-- **Comprehensive Analysis**: Detailed metrics and visualizations
+- **Advanced Explainable AI (XAI)**: Understand *why* an email is spam with top keyword highlighting from TF-IDF weights.
+- **Dynamic Threshold Tuning**: Control classification sensitivity with a tunable confidence threshold (0.0 - 1.0).
+- **Zero-JS Server-Side UI**: Robust, SEO-friendly interface powered by FastAPI + Jinja2 templates (works without client-side JavaScript).
+- **Real-Time Monitoring**: Integrated production logging (`app.log`) tracking confidence, labels, and request metadata.
+- **Multi-Model Evaluation**: Trains and compares 5 different ML algorithms (SVM, Naive Bayes, etc.).
+- **High Accuracy**: SVM model achieves 98.6% test accuracy.
+- **Web Interface**: Clean, responsive UI with text input and file upload.
+- **Docker Ready**: Containerized for easy deployment.
 
 ## 📊 Dataset
 
@@ -192,21 +194,26 @@ The dataset shows class imbalance, which is handled through appropriate evaluati
 
 ### Backend (FastAPI):
 - **Framework**: FastAPI with Uvicorn server
+- **Templating**: Jinja2 for server-side HTML rendering (no-JS core functionality)
+- **Monitoring**: Production logging to `app.log`
+- **XAI Engine**: Custom TF-IDF based feature importance extractor
 - **Endpoints**:
-  - `GET /`: Serves the main HTML page
-  - `POST /predict`: Classifies text input
-  - `POST /predict_file`: Classifies uploaded files
+  - `GET /`: Serves the main page with state support
+  - `POST /predict_form`: Classifies text input (Server-side UI)
+  - `POST /predict_file_form`: Classifies uploaded files (Server-side UI)
+  - `POST /predict`: JSON API for text classification
+  - `POST /predict_file`: JSON API for file classification
   - `GET /health`: Health check endpoint
 
 ### Frontend:
-- **HTML5**: Semantic markup with accessibility features
-- **CSS3**: Modern styling with gradients, animations, and responsive design
-- **JavaScript**: AJAX requests for real-time predictions
+- **HTML5/CSS3**: Modern responsive design with Jinja2 dynamic blocks
+- **Accessibility**: Standard HTML forms for robust user interaction
+- **Performance**: Zero-JS core; page reloads provide consistent state and results
 - **Features**:
   - Tabbed interface (Text Input / File Upload)
-  - Dynamic probability visualization
-  - Example email cards for testing
-  - Mobile-responsive design
+  - Interactive probability visualization
+  - Clickable example email cards
+  - Keyword-based prediction explanations
 
 ## 🛠️ Installation & Usage
 
@@ -343,11 +350,17 @@ email-spam-detector/
 
 ## 🔄 API Usage
 
-### Text Classification:
+### API JSON Request:
 ```bash
 curl -X POST "http://localhost:8000/predict" \
      -H "Content-Type: application/json" \
-     -d '{"text": "Your email text here"}'
+     -d '{"text": "Your email text here", "threshold": 0.5}'
+```
+
+### Form Post Request (Web Interface Mode):
+```bash
+curl -X POST "http://localhost:8000/predict_form" \
+     -d "text=Your email text here&threshold=0.5"
 ```
 
 ### File Upload Classification:
