@@ -4,3 +4,7 @@ INFO: Prediction=ham | Confidence=0.0012 if proba else 'N/A' | Threshold=0.5 | L
 INFO: NumExpr defaulting to 8 threads.
 INFO: NumExpr defaulting to 8 threads.
 INFO: Form-Text: Prediction=spam | Confidence=0.9080 | Threshold=0.5 | Length=18
+INFO: NumExpr defaulting to 8 threads.
+INFO: NumExpr defaulting to 8 threads.
+INFO: NumExpr defaulting to 8 threads.
+INFO: Form-Text: Prediction=spam | Confidence=0.9998 | Threshold=0.5 | Length=65

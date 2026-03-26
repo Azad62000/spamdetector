@@ -136,8 +136,18 @@ async def predict_file(file: UploadFile = File(...), threshold: Optional[float] 
         raise
 
 @app.get("/", response_class=HTMLResponse)
-def home(request: Request):
-    return templates.TemplateResponse("index.html", {"request": request, "result": None})
+def home(request: Request, tab: Optional[str] = "text", example: Optional[str] = None):
+    text = ""
+    if example == "spam":
+        text = "Congratulations! You have won a free iPhone. Click here to claim your prize!"
+    elif example == "ham":
+        text = "Hi, can we meet tomorrow at 10 AM for the project discussion?"
+    
+    return templates.TemplateResponse("index.html", {
+        "request": request, 
+        "result": {"text": text} if text else None, 
+        "tab": tab
+    })
 
 @app.post("/predict_form", response_class=HTMLResponse)
 def predict_form(request: Request, text: str = Form(...), threshold: float = Form(0.5)):

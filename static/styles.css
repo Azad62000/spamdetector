@@ -41,6 +41,18 @@ p {
   transition: background 0.3s;
 }
 .tab-button.active { background: #e2e8f0; font-weight: bold; }
+
+.tabs a {
+    text-decoration: none;
+    color: inherit;
+    display: inline-block;
+}
+
+.example-cards a {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+}
 .tab-content { display: none; }
 .tab-content.active { display: block; }
 textarea {

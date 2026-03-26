@@ -12,8 +12,8 @@
         <p>Enter email text or upload a file to check if it's spam or ham.</p>
 
         <div class="tabs">
-            <button class="tab-button {% if not tab or tab == 'text' %}active{% endif %}" onclick="showTab('text')">Text Input</button>
-            <button class="tab-button {% if tab == 'file' %}active{% endif %}" onclick="showTab('file')">File Upload</button>
+            <a href="/?tab=text" class="tab-button {% if not tab or tab == 'text' %}active{% endif %}">Text Input</a>
+            <a href="/?tab=file" class="tab-button {% if tab == 'file' %}active{% endif %}">File Upload</a>
         </div>
 
         <div id="text-tab" class="tab-content {% if not tab or tab == 'text' %}active{% endif %}">
@@ -84,18 +84,18 @@
         <div class="examples">
             <h3>Example Emails:</h3>
             <div class="example-cards">
-                <div class="card" onclick="useExample('Congratulations! You have won a free iPhone. Click here to claim your prize!')">
+                <a href="/?tab=text&example=spam" class="card">
                     <h4>Spam Example</h4>
                     <p>Congratulations! You have won a free iPhone. Click here to claim your prize!</p>
-                </div>
-                <div class="card" onclick="useExample('Hi, can we meet tomorrow at 10 AM for the project discussion?')">
+                </a>
+                <a href="/?tab=text&example=ham" class="card">
                     <h4>Ham Example</h4>
                     <p>Hi, can we meet tomorrow at 10 AM for the project discussion?</p>
-                </div>
+                </a>
             </div>
         </div>
     </div>
 
-    <script src="/static/script.js"></script>
+    <!-- No JavaScript needed for core functionality -->
 </body>
 </html>
