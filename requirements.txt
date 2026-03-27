@@ -5,3 +5,9 @@ joblib
 python-multipart
 nltk
 jinja2
+shap
+lime
+matplotlib
+seaborn
+pandas
+numpy

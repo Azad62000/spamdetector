@@ -85,11 +85,13 @@ A machine learning-powered web application for classifying emails as spam or ham
       "pandas",
       "numpy",
       "nltk",
-      "joblib"
+      "joblib",
+      "shap",
+      "lime",
+      "matplotlib",
+      "seaborn"
     ],
     "excluded_from_production": [
-      "matplotlib",
-      "seaborn",
       "training-only utilities"
     ]
   },
@@ -150,7 +152,6 @@ The dataset shows class imbalance, which is handled through appropriate evaluati
 ## 🤖 Model Training & Evaluation
 
 ### Models Evaluated:
-
 1. **Naive Bayes** (MultinomialNB)
    - Accuracy: 97.4%
    - Precision: 99.2%
@@ -189,6 +190,24 @@ The dataset shows class imbalance, which is handled through appropriate evaluati
 - **Recall**: True positives / (True positives + False negatives)
 - **F1-Score**: Harmonic mean of precision and recall
 - **ROC-AUC**: Area under Receiver Operating Characteristic curve
+
+## 🧠 Model Interpretability (SHAP & LIME)
+
+To ensure the model's decisions are transparent and trustworthy, we integrated **SHAP (SHapley Additive exPlanations)** and **LIME (Local Interpretable Model-agnostic Explanations)**.
+
+### 1. SHAP (Global Interpretability)
+SHAP provides a global view of which features (words) are most important across the entire dataset.
+- **SHAP Summary Plot**: Shows the top 20 words that most strongly influence the model's spam vs. ham classification.
+- **Insight**: Words like "free", "claim", "win", and "txt" consistently drive spam predictions, while personal greetings or common conversational words drive ham predictions.
+
+![SHAP Summary](artifacts/shap_summary.png)
+
+### 2. LIME (Local Interpretability)
+LIME explains individual predictions by perturbing the input and seeing how the prediction changes.
+- **LIME Local Explanation**: Visualizes why a specific email was classified as spam.
+- **Insight**: Highlights exactly which words in a given text (e.g., "prize", "urgent") pushed the probability towards "spam".
+
+![LIME Explanation](artifacts/lime_explanation.png)
 
 ## 🖥️ Web Application
 

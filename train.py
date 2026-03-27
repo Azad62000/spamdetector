@@ -16,6 +16,8 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, roc_auc_score, confusion_matrix, precision_recall_curve, roc_curve
 import matplotlib.pyplot as plt
 import seaborn as sns
+import shap
+from lime.lime_text import LimeTextExplainer
 from nltk.stem import PorterStemmer
 import joblib
 
@@ -119,8 +121,10 @@ def evaluate_models(models, X_train, X_test, y_train, y_test, y_train_bin, y_tes
             roc_curves[name] = (fpr, tpr)
     return results, pr_curves, roc_curves
 
-def save_visualizations(results, pr_curves, roc_curves, y_test, y_pred_best, out_dir="artifacts"):
+def save_visualizations(results, pr_curves, roc_curves, y_test, y_pred_best, best_model, X_train, X_test, out_dir="artifacts"):
     os.makedirs(out_dir, exist_ok=True)
+    
+    # 1. Model Accuracy Comparison
     names = list(results.keys())
     accuracies = [results[n]["test"]["accuracy"] for n in names]
     plt.figure(figsize=(10, 6))
@@ -130,6 +134,8 @@ def save_visualizations(results, pr_curves, roc_curves, y_test, y_pred_best, out
     plt.tight_layout()
     plt.savefig(os.path.join(out_dir, "model_accuracy_comparison.png"))
     plt.close()
+
+    # 2. Precision-Recall Curves
     plt.figure(figsize=(8, 6))
     for name, (r, p) in pr_curves.items():
         plt.plot(r, p, label=name)
@@ -139,6 +145,8 @@ def save_visualizations(results, pr_curves, roc_curves, y_test, y_pred_best, out
     plt.tight_layout()
     plt.savefig(os.path.join(out_dir, "precision_recall_curves.png"))
     plt.close()
+
+    # 3. ROC Curves
     plt.figure(figsize=(8, 6))
     for name, (fpr, tpr) in roc_curves.items():
         plt.plot(fpr, tpr, label=name)
@@ -149,6 +157,8 @@ def save_visualizations(results, pr_curves, roc_curves, y_test, y_pred_best, out
     plt.tight_layout()
     plt.savefig(os.path.join(out_dir, "roc_curves.png"))
     plt.close()
+
+    # 4. Confusion Matrix for Best Model
     cm = confusion_matrix(y_test, y_pred_best, labels=["ham", "spam"])
     plt.figure(figsize=(6, 5))
     sns.heatmap(cm, annot=True, fmt="d", cmap="Blues", xticklabels=["ham", "spam"], yticklabels=["ham", "spam"])
@@ -157,6 +167,52 @@ def save_visualizations(results, pr_curves, roc_curves, y_test, y_pred_best, out
     plt.tight_layout()
     plt.savefig(os.path.join(out_dir, "confusion_matrix_best.png"))
     plt.close()
+
+    # 5. SHAP Global Interpretability
+    try:
+        print("Generating SHAP global importance...")
+        tfidf = best_model.named_steps["tfidf"]
+        clf = best_model.named_steps["clf"]
+        X_test_transformed = tfidf.transform(X_test)
+        feature_names = tfidf.get_feature_names_out()
+        
+        # Accessing underlying classifier from CalibratedClassifierCV
+        # Using index 0 estimator for explanation
+        base_clf = clf.calibrated_classifiers_[0].estimator
+        explainer = shap.LinearExplainer(base_clf, X_test_transformed, feature_names=feature_names)
+        shap_values = explainer.shap_values(X_test_transformed)
+        
+        plt.figure(figsize=(10, 8))
+        shap.summary_plot(shap_values, X_test_transformed, feature_names=feature_names, show=False, max_display=20)
+        plt.title("SHAP Global Feature Importance (Top 20)")
+        plt.tight_layout()
+        plt.savefig(os.path.join(out_dir, "shap_summary.png"))
+        plt.close()
+        print(f"SHAP summary saved to {out_dir}/shap_summary.png")
+    except Exception as e:
+        print(f"Warning: Failed to generate SHAP plot: {e}")
+
+    # 6. LIME Local Interpretability
+    try:
+        print("Generating LIME local explanation...")
+        explainer = LimeTextExplainer(class_names=["ham", "spam"])
+        spam_indices = np.where((y_test == "spam") & (y_pred_best == "spam"))[0]
+        if len(spam_indices) > 0:
+            idx = spam_indices[0]
+            sample_text = X_test.iloc[idx]
+            predict_fn = lambda x: best_model.predict_proba(x)
+            exp = explainer.explain_instance(sample_text, predict_fn, num_features=10)
+            
+            fig = exp.as_pyplot_figure()
+            plt.title(f"LIME Local Explanation (Spam Sample)")
+            plt.tight_layout()
+            plt.savefig(os.path.join(out_dir, "lime_explanation.png"))
+            plt.close()
+            print(f"LIME explanation saved to {out_dir}/lime_explanation.png")
+        else:
+            print("No correctly predicted spam samples found for LIME.")
+    except Exception as e:
+        print(f"Warning: Failed to generate LIME plot: {e}")
 
 def train_and_save_best(input_path: str = "spam.csv", models_out_dir="models", artifacts_dir="artifacts"):
     os.makedirs(models_out_dir, exist_ok=True)
@@ -183,7 +239,7 @@ def train_and_save_best(input_path: str = "spam.csv", models_out_dir="models", a
     best_path = os.path.join(models_out_dir, "best_model.joblib")
     joblib.dump(best_model, best_path)
     y_pred_best = best_model.predict(X_test)
-    save_visualizations(results, pr_curves, roc_curves, y_test, y_pred_best, artifacts_dir)
+    save_visualizations(results, pr_curves, roc_curves, y_test, y_pred_best, best_model, X_train, X_test, artifacts_dir)
     return best_path, results, best_name
 
 def main():
