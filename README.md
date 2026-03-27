@@ -1,7 +1,9 @@
-# Email Spam Detection Classifier
+# 📧 Email Spam Detection System (Production-Ready ML API)
 
 ## 🚀Live Demo: 
 https://spamdetector-k40j.onrender.com
+
+Deployed on Render with real-time API and web interface for live inference.
 
 A machine learning-powered web application for classifying emails as spam or ham (non-spam) using natural language processing techniques. The system achieves high accuracy through multiple ML models and provides an intuitive web interface for real-time predictions.
 
@@ -120,6 +122,7 @@ A machine learning-powered web application for classifying emails as spam or ham
 - **High Accuracy**: SVM model achieves 98.6% test accuracy.
 - **Web Interface**: Clean, responsive UI with text input and file upload.
 - **Docker Ready**: Containerized for easy deployment.
+- ⚡ Low-latency inference (<100ms) using preloaded models and optimized preprocessing
 
 ## 📊 Dataset
 
@@ -313,6 +316,8 @@ KNN                | 92.0%   | 98.4%    | 40.9% | 57.8%   | 83.9%
 ```
 
 ## 🧠 Technical Decisions & Thinking
+
+- Tradeoff: Chose classical ML over deep learning models for faster inference, lower resource usage, and production efficiency
 
 ### Why SVM?
 - **Best F1-score**: Balances precision and recall optimally
